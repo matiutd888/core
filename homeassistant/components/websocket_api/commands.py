@@ -301,6 +301,8 @@ def _send_handle_get_states_response(
     connection.send_message(construct_result_message(msg_id, f"[{joined_states}]"))
 
 
+
+
 def _forward_entity_changes(
     send_message: Callable[[str | dict[str, Any] | Callable[[], str]], None],
     entity_ids: set[str],

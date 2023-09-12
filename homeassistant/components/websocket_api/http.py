@@ -48,6 +48,7 @@ class WebsocketAPIView(HomeAssistantView):
 
     async def get(self, request: web.Request) -> web.WebSocketResponse:
         """Handle an incoming websocket connection."""
+        breakpoint()
         return await WebSocketHandler(request.app["hass"], request).async_handle()
 
 
@@ -139,8 +140,10 @@ class WebSocketHandler:
                 if (message := message_queue.popleft()) is None:
                     return
 
-                debug_enabled = is_enabled_for(logging_debug)
+                # debug_enabled = is_enabled_for(logging_debug)
+                debug_enabled = True
                 messages_remaining -= 1
+
 
                 if (
                     not messages_remaining
@@ -149,6 +152,8 @@ class WebSocketHandler:
                 ):
                     if debug_enabled:
                         debug("%s: Sending %s", self.description, message)
+                    if message.find("cover.test_name") != -1:
+                        breakpoint()
                     await send_str(message)
                     continue
 
@@ -162,8 +167,11 @@ class WebSocketHandler:
 
                 joined_messages = ",".join(messages)
                 coalesced_messages = f"[{joined_messages}]"
+                print("")
                 if debug_enabled:
                     debug("%s: Sending %s", self.description, coalesced_messages)
+                if coalesced_messages.find("cover.test_name") != -1:
+                    breakpoint()
                 await send_str(coalesced_messages)
         except asyncio.CancelledError:
             debug("%s: Writer cancelled", self.description)

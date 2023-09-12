@@ -5,7 +5,12 @@ of entities and react to changes.
 """
 from __future__ import annotations
 
+_DELME_DEBUG=False
+
 import asyncio
+import pdb
+
+
 from collections.abc import (
     Awaitable,
     Callable,
@@ -1022,17 +1027,21 @@ class EventBus:
         origin: EventOrigin = EventOrigin.local,
         context: Context | None = None,
         time_fired: datetime.datetime | None = None,
+        delme_debug: bool = False
     ) -> None:
         """Fire an event.
 
         This method must be run in the event loop.
         """
+        if delme_debug:
+            _LOGGER.info("MATI: async_fire called!")
         if len(event_type) > MAX_LENGTH_EVENT_EVENT_TYPE:
             raise MaxLengthExceeded(
                 event_type, "event_type", MAX_LENGTH_EVENT_EVENT_TYPE
             )
 
         listeners = self._listeners.get(event_type, [])
+
         match_all_listeners = self._match_all_listeners
 
         if not listeners and not match_all_listeners:
@@ -1057,10 +1066,16 @@ class EventBus:
                     continue
             if run_immediately:
                 try:
+                    if delme_debug:
+                        if _DELME_DEBUG:
+                            breakpoint()
+                        _LOGGER.info(f"MATI async_fire: running immidiately job {job} and event {event}")
                     job.target(event)
                 except Exception:  # pylint: disable=broad-except
                     _LOGGER.exception("Error running job: %s", job)
             else:
+                if delme_debug:
+                    _LOGGER.info(f"MATI async_fire: adding job {job} and event {event}")
                 self._hass.async_add_hass_job(job, event)
 
     def listen(
@@ -1658,13 +1673,19 @@ class StateMachine:
         )
         if old_state is not None:
             old_state.expire()
+        # delme_debug = state.attributes.get("device_class", None) == "awning"
+        delme_debug = state.entity_id.find("cover") != -1
         self._states[entity_id] = state
+        if delme_debug:
+            _LOGGER.info(f"MATI: async_set {state.as_dict()}")
+            _LOGGER.info(f"MATI: async_set {state.attributes}")
         self._bus.async_fire(
             EVENT_STATE_CHANGED,
             {"entity_id": entity_id, "old_state": old_state, "new_state": state},
             EventOrigin.local,
             context,
             time_fired=now,
+            delme_debug=delme_debug
         )
 
 

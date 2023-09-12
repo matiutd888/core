@@ -82,6 +82,9 @@ class KindhomeBluetoothDevice:
     async def stop(self):
         await self.bleak_client.write_gatt_char(MOVE_CHAR_UUID, bytearray([0, SECURITY_CODE]))
 
+
+
+
     # async def poll_data(self) -> KindhomeSolarBeakerData:
     #     pass
 
