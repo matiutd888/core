@@ -35,10 +35,8 @@ class KindhomeSolarbeakerMotorState(Enum):
     @staticmethod
     def state_byte_to_state_enum(value):
         """Get enum instance from motor state enum value."""
-        log(_LOGGER, "state_byte_to_state_enum", f"value={value}")
         for state in KindhomeSolarbeakerMotorState:
             if state.value == value:
-                log(_LOGGER, "state_byte_to_state_enum", f"{state}={state.value}")
                 return state
         return KindhomeSolarbeakerMotorState.UNDEFINED
 
@@ -81,7 +79,7 @@ class KindhomeSolarbeakerDevice:
                 int.from_bytes(data, "little")
             )
             log(_LOGGER, "_motor_state_notification_callback", f"{new_motor_state}")
-            self.state = dataclasses.replace(self.state, motor_state=new_motor_state)
+            self.state.motor_state = new_motor_state
             self._publish_updates()
 
         await self.bleak_client.start_notify(
@@ -90,12 +88,9 @@ class KindhomeSolarbeakerDevice:
 
     async def _subscribe_to_battery(self):
         def _battery_notification_callback(sender, data: bytearray):
-            log(_LOGGER, "_battery_notification_callback", f"data: {sender}: {data}")
             assert len(data) == 1
-            battery_level_percentage = data[0]
-            self.state = dataclasses.replace(
-                self.state, battery_level=battery_level_percentage
-            )
+            new_battery_level = data[0]
+            self.state.battery_level = new_battery_level
             self._publish_updates()
 
         await self.bleak_client.start_notify(
