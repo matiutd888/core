@@ -116,9 +116,6 @@ class KindhomeSolarbeakerDevice:
         """Return unique device id."""
         return f"kindhome_solarbeaker_{self.ble_device.address}"
 
-    # def available(self):
-    #     return True
-
     async def connect(self):
         """Connect and pair the device."""
         await self.bleak_client.connect()
@@ -129,7 +126,7 @@ class KindhomeSolarbeakerDevice:
         """Get initial device state and subscribe to notification about state changes sent by device."""
         assert self.bleak_client.is_connected
 
-        # I dont know how to get initial state!
+        # I dont know how to get initial state...
         # initial_motor_state_val = await self.bleak_client.read_gatt_char(GET_MOTOR_STATE_CHAR_UUID)
         # initial_motor_state_enum = KindhomeSolarbeakerMotorState.state_byte_to_state_enum(initial_motor_state_val)
         #
