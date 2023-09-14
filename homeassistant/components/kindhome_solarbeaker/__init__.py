@@ -7,6 +7,7 @@ from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import (
+    ConfigEntryError,
     ConfigEntryNotReady,
 )
 
@@ -44,7 +45,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             f"Timeout while trying to connect to {device.ble_device}"
         ) from e
     except BleakError as e:
-        raise ConfigEntryNotReady(
+        raise ConfigEntryError(
             f"Error while trying to connect to {device.ble_device}"
         ) from e
     hass.data.setdefault(DOMAIN, {})
