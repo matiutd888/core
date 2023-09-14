@@ -40,10 +40,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await device.get_state_and_subscribe_to_changes()
 
     except TimeoutError as e:
-        # hass.components.persistent_notification.async_create(
-        #     f"Connection error: error connecting to {device.ble_device}",
-        #     title=TITLE,
-        # )
         raise ConfigEntryNotReady(
             f"Timeout while trying to connect to {device.ble_device}"
         ) from e
