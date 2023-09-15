@@ -39,7 +39,7 @@ class KindhomeSolarbeakerConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_bluetooth(
         self, discovery_info: BluetoothServiceInfoBleak
     ) -> FlowResult:
-        """Check if discovered should be presented to user to be confirmed."""
+        """Check if discovered should be presented for user to be confirmed."""
         log(_LOGGER, "async_step_bluetooth", f"called! {discovery_info.as_dict()}")
         await self.async_set_unique_id(discovery_info.address)
         self._abort_if_unique_id_configured()
